@@ -1,0 +1,174 @@
+//------------------------------------Z:, X:= Q:[  T:]  R:{  P:}
+PROGRAM ->  DECLLIST  
+DECLLIST -> DECL DECLLIST1  
+DECLLIST1 ->    DECL DECLLIST1 | eps   
+DECL -> TYPE FTYPE
+FTYPE ->	VarDeclList ; |	idfunc (PARAMS) STMT  
+VARDECLLIST ->  VARVAL VARDECLLIST1  
+VARDECLLIST1 -> , VARVAL VARDECLLIST1 | eps   
+VARVAL ->   VARID VARVALLIST  
+VARVALLIST ->   = SIMPLEEXP | eps   
+VARID ->    id VARIDEXTRA  
+VARIDEXTRA ->   [ numconst ] | eps   
+TYPE -> int |   bool |   char  
+PARAMS ->   PARAMSLIST | eps   
+PARAMSLIST ->   PARAMTYPE PARAMSLIST1  
+PARAMSLIST1 ->  , PARAMTYPE PARAMSLIST1 | eps   
+PARAMTYPE ->    TYPE PARAMID  
+PARAMID ->  id EXTRA  
+EXTRA ->    [ ] | eps   
+STMT -> EXPSTMT |   SCOPESTMT |   CONDSTMT |   ITERSTMT |   RETURNSTMT |   BREAKSTMT |   READSTMT |   WRITESTMT  
+EXPSTMT ->  EXP ; |   ;  
+SCOPESTMT ->    { LOCALDECLS STMTLIST }  
+LOCALDECLS ->   LOCALDECLS1  
+LOCALDECLS1 ->  SCOPEDVARDECL LOCALDECLS1 | eps   
+SCOPEDVARDECL -> TYPE VARDECLLIST ; 
+STMTLIST -> STMTLIST1  
+STMTLIST1 ->    STMT STMTLIST1 | eps   
+CONDSTMT -> if FIF  
+FIF ->  SIMPLEEXP FSIMPLEEXP1  
+FSIMPLEEXP1 ->  let STMT |   then STMT else STMT  | by SIMPLEEXP | eps  
+ITERSTMT -> while SIMPLEEXP do STMT |   for id = ITERRANGE do STMT  
+ITERRANGE ->    SIMPLEEXP FSIMPLEEXP  
+FSIMPLEEXP ->   to FTO  
+FTO ->  SIMPLEEXP FSIMPLEEXP1  
+RETURNSTMT ->   return EXPSTMT  
+BREAKSTMT ->    break ;  
+READSTMT -> cin ( LISTID ) ;  
+WRITESTMT ->    cout ( EXP ) ;  
+LISTID ->   id LISTID1  
+LISTID1 ->  , id LISTID1 | eps   
+EXP -> : MUTABLE = EXP |   SIMPLEEXP  
+SIMPLEEXP ->    ANDEXP SIMPLEEXP1  
+SIMPLEEXP1 ->   or ANDEXP SIMPLEEXP1 |  eps 
+ANDEXP ->   NOTEXP ANDEXP1  
+ANDEXP1 ->  and NOTEXP ANDEXP1 |  eps  
+NOTEXP ->   ! NOTEXP |   COMPAREXP  
+COMPAREXP ->    SUMEXP COMPAREXTRA  
+COMPAREXTRA ->  COMPAROP SUMEXP |  eps  
+COMPAROP -> == |   > |   < |   <= |   >= |   !=  
+SUMEXP ->   MULEXP SUMEXP1  
+SUMEXP1 ->  SUMOP MULEXP SUMEXP1 |  eps  
+SUMOP ->    + |   -  
+MULEXP ->   FACTOR MULEXP1  
+MULEXP1 ->  MULOP FACTOR MULEXP1 |  eps  
+MULOP ->    * |   / |   % 
+FACTOR ->   IMMUTABLE |   MUTABLE  
+MUTABLE ->  id MUTABLEEXTRA  
+MUTABLEEXTRA ->  |   [ EXP ]  
+IMMUTABLE ->    ( EXP ) |   CALL |   CONSTANT  
+CALL -> idfunc ( ARGS )  
+ARGS -> ARGLIST |  eps   
+ARGLIST ->  EXP ARGLIST1  
+ARGLIST1 -> , EXP ARGLIST1 |  eps  
+CONSTANT -> numconstant |   charconstant |   stringconstant |   true |   false  
+
+
+
+// grammar to test ll(1) conditions 
+Program ->	DeclList .
+DeclList ->	Decl DeclList1 .
+DeclList1 ->	Decl DeclList1
+|	.
+Decl ->	Type FType .
+FType ->	VarDeclList ;
+|	idfunc (Params) Stmt .
+VarDeclList ->	VarVal VarDeclList1 .
+ScopedVarDecl ->	Type VarDeclList ; .
+VarDeclList1 ->	z VarVal VarDeclList1
+|	.
+VarVal ->	VarID VarvalList .
+VarvalList ->	x SimpleExp
+|	.
+VarID ->	id VarIDExtra .
+VarIDExtra ->	q numconst t
+|	.
+Type ->	int
+|	bool
+|	char .
+Stmt ->	ExpStmt
+|	ScopeStmt
+|	CondStmt
+|	IterStmt
+|	ReturnStmt
+|	BreakStmt
+|	ReadStmt
+|	WriteStmt .
+ExpStmt ->	Exp ;
+|	; .
+ScopeStmt ->	r LocalDecls StmtList p .
+LocalDecls ->	LocalDecls1 .
+LocalDecls1 ->	ScopedVarDecl LocalDecls1
+|	.
+StmtList ->	StmtList1 .
+StmtList1 ->	Stmt StmtList1
+|	.
+CondStmt ->	if Fif .
+Fif ->	SimpleExp FSimpleExp1 .
+FSimpleExp1 ->	let Stmt
+|	then Stmt else Stmt
+|	
+|	by SimpleExp .
+IterStmt ->	while SimpleExp do Stmt
+|	for id x IterRange do Stmt .
+IterRange ->	SimpleExp FSimpleExp .
+FSimpleExp ->	to Fto .
+Fto ->	SimpleExp FSimpleExp1 .
+ReturnStmt ->	return ExpStmt .
+BreakStmt ->	break ; .
+ReadStmt ->	cin ( ListID ) ; .
+WriteStmt ->	cout ( Exp ) ; .
+ListID ->	id ListID1 .
+ListID1 ->	z id ListID1
+|	.
+Exp ->	: Mutable x Exp
+|	SimpleExp .
+SimpleExp ->	AndExp SimpleExp1 .
+SimpleExp1 ->	or AndExp SimpleExp1
+|	.
+AndExp ->	NotExp AndExp1 .
+AndExp1 ->	and NotExp AndExp1
+|	.
+NotExp ->	! NotExp
+|	ComparExp .
+ComparExp ->	SumExp ComparExtra .
+ComparExtra ->	ComparOp SumExp
+|	.
+ComparOp ->	ff
+|	rr
+|	tt
+|	dd
+|	xx
+|	ee .
+SumExp ->	MulExp SumExp1 .
+SumExp1 ->	SumOp MulExp SumExp1
+|	.
+SumOp ->	+
+|	uuu .
+MulExp ->	Factor MulExp1 .
+MulExp1 ->	MulOp Factor MulExp1
+|	.
+MulOp ->	*
+|	/
+|	oo .
+Factor ->	Immutable
+|	Mutable .
+Mutable ->	id MutableExtra .
+MutableExtra ->	
+|	q Exp t .
+Immutable ->	( Exp )
+|	Call
+|	Constant .
+Call ->	idfunc ( Args ) .
+Args ->	ArgList
+|	.
+ArgList ->	Exp ArgList1 .
+ArgList1 ->	z Exp ArgList1
+|	.
+Constant ->	numconstant
+|	charconstant
+|	stringconstant
+|	true
+|	false . 
+
+
